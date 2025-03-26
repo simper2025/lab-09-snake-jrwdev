@@ -9,8 +9,8 @@ Mouse::Mouse() {
 }
 
 void Mouse::Move(int max_x, int max_y) {
-	location.x = rand() % max_x;
-	location.y = rand() % max_y;
+	location.x = (rand() % (max_x - 1)) + 1;
+	location.y = (rand() % (max_y - 1)) + 1;
 }
 
 void Mouse::draw() {

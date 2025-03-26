@@ -3,7 +3,7 @@
 
 KeyCommand Keyboard::get_key() {
 	static char key;
-	static KeyCommand key_command = KeyCommand::RIGHT;
+	static KeyCommand key_command = KeyCommand::NONE;
 
 	if (_kbhit()) {
 		key = _getch();
@@ -26,6 +26,7 @@ KeyCommand Keyboard::get_key() {
 				key_command = KeyCommand::QUIT;
 				break;
 			default:
+				key_command = KeyCommand::NONE;
 				break;
 			}
 		}
@@ -51,6 +52,7 @@ KeyCommand Keyboard::get_key() {
 				key_command = KeyCommand::QUIT;
 				break;
 			default:
+				key_command = KeyCommand::NONE;
 				break;
 			}
 		}

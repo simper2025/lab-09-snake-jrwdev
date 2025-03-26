@@ -1,12 +1,13 @@
 #ifndef KEYCOMMAND_H
 #define KEYCOMMAND_H
 
-enum KeyCommand {
+enum class KeyCommand {
     UP,
     DOWN,
     LEFT,
     RIGHT,
-    QUIT
+    QUIT,
+    NONE
 };
 
 #endif

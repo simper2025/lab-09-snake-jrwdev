@@ -1,68 +1,61 @@
 #include <chrono>
-#include <windows.h>
+#include <Windows.h>
 #include "GameRunner.hpp"
 #include "Console.hpp"
+#include <conio.h>
 
 
-GameRunner::GameRunner(float fps) {
-    keypress = KeyCommand::RIGHT;
-    mouse.Move(20, 20);
+GameRunner::GameRunner(float fps)
+    : frame_duration(fps),
+    keypress(KeyCommand::NONE),
+    snake(12, 14, { 10, 10 }, { 1, 0 }, 5),
+    mouse(),
+    game_over(false)
+{
+    mouse.Move(WIDTH, HEIGHT);
 }
 
 void GameRunner::RunGame() {
-    int keypress = 0;
-    std::chrono::time_point<std::chrono::system_clock> runTime;
-    std::chrono::time_point<std::chrono::system_clock> currentTime;
-    runTime = std::chrono::system_clock::now();
-    Sleep(300);
+    Console::drawBorder(WIDTH, HEIGHT);
+    snake.draw();
+    mouse.draw();
 
-    point playerloc = { 0, 10 };
-    point direction = { 1, 0 };
-    int length = 5;
-
-    Keyboard keyboard;
-    Console console;
-
-    //Loop to start drawing and playing.
-    while (keypress != key_ESCAPE) {
+    while (!game_over) {
         KeyCommand key = keyboard.get_key();
-
-        switch (key) {
-        case KeyCommand::LEFT:
-            direction = { -1, 0 };
-            break;
-        case KeyCommand::RIGHT:
-            direction = { 0, -1 };
-            break;
-        case KeyCommand::UP:
-            direction = { 0, -1 };
-            break;
-        case KeyCommand::DOWN:
-            direction = { 0, 1 };
-            break;
-        case KeyCommand::QUIT:
-            keypress = key_ESCAPE;
-            break;
-        default:
-            break;
+        if (key == KeyCommand::QUIT) {
+            game_over = true;
+            continue;
         }
 
-    currentTime = std::chrono::system_clock::now();
+        snake.move(key);
 
-    double elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - runTime).count();
-    if (elapsedTime > 0.3 * 1000) {
-        runTime = std::chrono::system_clock::now();
+        if (snake.getHead().x == mouse.getLocation().x && snake.getHead().y == mouse.getLocation().y) {
+            snake.grow();
+            mouse.Move(WIDTH, HEIGHT);
+        }
 
-        //Most of your game logic goes here.
-        /*console.txtPlot(playerloc, 31);
+        if (snake.checkCollision(WIDTH, HEIGHT)) {
+            game_over = true;
+        }
 
-        console.setcolor(15);
-        console.gotoxy(1, 21);
-        _cprintf("Length: %i", length);*/
+        for (int y = 0; y < HEIGHT; ++y) {
+            for (int x = 0; x < WIDTH; ++x) {
+                Console::txtPlot({ x, y }, 0);
+            }
+        }
 
+        Console::drawBorder(WIDTH, HEIGHT);
+        snake.draw();
+        mouse.draw();
 
+        Console::setColor(15);
+        Console::gotoXY(0, HEIGHT);
+        _cprintf("Length: %d", snake.getLength());
+
+        Sleep(frame_duration);
     }
 
-    Sleep(10);
-    //}
+    Console::setColor(15);
+    Console::gotoXY(0, HEIGHT + 1);
+    _cprintf("Game Over! Final Length: %d", snake.getLength());
 }

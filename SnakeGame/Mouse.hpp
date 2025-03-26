@@ -1,6 +1,8 @@
 #ifndef MOUSE_HPP
 #define MOUSE_HPP
 
+#include "Point.h"
+
 class Mouse {
 private:
 	point location;
